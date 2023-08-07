@@ -1,24 +1,57 @@
 const express = require("express");
-const mongoose = require("mongoose");
 const passport = require("passport");
 const bodyParser = require("body-parser");
 const session = require("express-session");
+const dotenv = require("dotenv");
+const LocalStrategy = require("passport-local").Strategy;
+const bcrypt = require("bcryptjs");
 
-const UserRoutes = require("./routes/userRoutes"); // 假设你有一个专门处理用户注册和登录的路由文件
+const UserRoutes = require("./routes/userRoutes");
+const User = require("./models/User"); // 引入User模型
+
+dotenv.config({ path: "./config.env" });
 
 const app = express();
 
-// 连接到MongoDB
-mongoose.connect("mongodb://localhost:27017/yourDatabaseName", {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
-
-// 使用bodyParser解析POST请求的数据
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// 初始化passport用于身份验证
+passport.use(
+  new LocalStrategy(async (username, password, done) => {
+    try {
+      const user = await User.findOne({
+        $or: [{ username: username }, { email: username }],
+      });
+      if (!user) {
+        console.log("User not found!");
+        return done(null, false, { message: "Incorrect username." });
+      }
+      const validPassword = await bcrypt.compare(password, user.password);
+      if (!validPassword) {
+        console.log("Password mismatch!");
+        return done(null, false, { message: "Incorrect password." });
+      }
+      return done(null, user);
+    } catch (err) {
+      console.error("Error in passport strategy:", err);
+      done(err);
+    }
+  })
+);
+
+passport.serializeUser((user, done) => {
+  done(null, user.id);
+});
+
+passport.deserializeUser(async (id, done) => {
+  try {
+    const user = await User.findById(id);
+    done(null, user);
+  } catch (err) {
+    done(err, null);
+  }
+});
+
 app.use(
   session({
     secret: "your_secret_key",
@@ -29,13 +62,6 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
-// 使用路由
 app.use("/users", UserRoutes);
-
-// 设置服务器监听
-const PORT = 3000;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
 
 module.exports = app;

@@ -8,6 +8,8 @@ const router = express.Router();
 router.post("/register", UserController.register);
 
 // 用户登录
+// TODO: 加了passport.authenticate("local")就会有 bad request
+// TODO: 后续需要增加jwt的验证
 router.post("/login", passport.authenticate("local"), UserController.login);
 
 // 用户登出
