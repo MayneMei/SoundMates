@@ -1,21 +1,40 @@
 const express = require("express");
 const passport = require("passport");
-const UserController = require("../controllers/UserController"); // 假设你有一个用户控制器
+const UserController = require("../controllers/UserController");
 
 const router = express.Router();
+
+// Middleware to require JWT authentication
+const jwtAuth = passport.authenticate("jwt", { session: false });
 
 // 用户注册
 router.post("/register", UserController.register);
 
+// 邮箱验证
+router.get("/verify-email/:token", UserController.verifyEmail);
+
 // 用户登录
-// TODO: 加了passport.authenticate("local")就会有 bad request
-// TODO: 后续需要增加jwt的验证
-router.post("/login", passport.authenticate("local"), UserController.login);
+router.post("/login", function (req, res, next) {
+  passport.authenticate("local", function (err, user, info) {
+    if (err) {
+      return next(err);
+    }
+    if (!user) {
+      return res.status(400).json({ error: "Bad request" });
+    }
+    req.logIn(user, function (err) {
+      if (err) {
+        return next(err);
+      }
+      return UserController.login(req, res);
+    });
+  })(req, res, next);
+});
 
 // 用户登出
-router.get("/logout", UserController.logout);
+router.get("/logout", jwtAuth, UserController.logout); // User needs to be authenticated to logout
 
 // 获取当前用户信息
-router.get("/profile", UserController.profile);
+router.get("/profile", jwtAuth, UserController.profile); // User needs to be authenticated to view profile
 
 module.exports = router;

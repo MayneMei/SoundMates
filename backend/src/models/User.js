@@ -24,6 +24,12 @@ const UserSchema = new Schema({
     type: String,
     default: "",
   },
+  isVerified: {
+    type: Boolean,
+    default: false,
+  },
+  emailVerificationToken: String,
+  emailVerificationTokenExpires: Date,
 });
 
 module.exports = mongoose.model("User", UserSchema);

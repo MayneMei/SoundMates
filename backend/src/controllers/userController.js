@@ -1,7 +1,10 @@
-const User = require("../models/User"); // 假设你有一个用户模型
-const bcrypt = require("bcryptjs"); // 使用bcrypt来加密密码
-const jwt = require("jsonwebtoken"); //使用jwt来当签名令牌
+const User = require("../models/User");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 const dotenv = require("dotenv");
+const crypto = require("crypto");
+const Email = require("../utils/email"); // Assuming you have implemented this utility function
+
 dotenv.config();
 
 const UserController = {
@@ -10,10 +13,47 @@ const UserController = {
       const { username, password, email } = req.body;
 
       const hashedPassword = await bcrypt.hash(password, 10);
-      const newUser = new User({ username, password: hashedPassword, email });
+      const verificationToken = crypto.randomBytes(32).toString("hex");
+
+      const newUser = new User({
+        username,
+        password: hashedPassword,
+        email,
+        verificationToken,
+      });
 
       await newUser.save();
-      res.status(201).json({ message: "User registered!" });
+
+      const verificationURL = `http://localhost:3000/users/verify-email/${verificationToken}`;
+
+      // Instantiate the Email class and send the verification email
+      const emailInstance = new Email(newUser, verificationURL);
+      await emailInstance.sendWelcome();
+
+      res.status(201).json({
+        message: "User registered! Please verify your email.",
+      });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  },
+
+  verifyEmail: async (req, res) => {
+    try {
+      const token = req.params.token;
+      const user = await User.findOne({ verificationToken: token });
+
+      if (!user) {
+        return res
+          .status(400)
+          .json({ error: "Invalid or expired verification token." });
+      }
+
+      user.verificationToken = null;
+      user.isVerified = true; // Assuming your User model has this field
+      await user.save();
+
+      res.json({ message: "Email verified successfully!" });
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
@@ -24,22 +64,25 @@ const UserController = {
       console.log(req.body);
       const { emailOrUsername, password } = req.body;
 
-      // 在数据库中查找用户，用户名或电子邮件匹配
       const user = await User.findOne({
         $or: [{ email: emailOrUsername }, { username: emailOrUsername }],
       });
 
       if (!user) {
-        return res.status(400).json({ error: "no user" });
+        return res.status(400).json({ error: "User not found." });
       }
 
-      // 比较密码
+      if (!user.isVerified) {
+        return res.status(400).json({
+          error: "Email not verified. Please verify your email first.",
+        });
+      }
+
       const isMatch = await bcrypt.compare(password, user.password);
       if (!isMatch) {
-        return res.status(400).json({ error: "Invalid credentials" });
+        return res.status(400).json({ error: "Invalid credentials." });
       }
 
-      // 生成JWT
       const payload = { userId: user.id };
       const token = jwt.sign(payload, process.env.JWT_SECRET, {
         expiresIn: "1h",
@@ -57,7 +100,6 @@ const UserController = {
   },
 
   profile: (req, res) => {
-    // 返回用户的详细信息，但这里假设我们只返回用户名
     res.json({ username: req.user.username });
   },
 };
