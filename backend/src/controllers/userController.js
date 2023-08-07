@@ -1,6 +1,8 @@
 const User = require("../models/User"); // 假设你有一个用户模型
 const bcrypt = require("bcryptjs"); // 使用bcrypt来加密密码
 const jwt = require("jsonwebtoken"); //使用jwt来当签名令牌
+const dotenv = require("dotenv");
+dotenv.config();
 
 const UserController = {
   register: async (req, res) => {

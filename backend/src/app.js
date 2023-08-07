@@ -17,26 +17,32 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 passport.use(
-  new LocalStrategy(async (username, password, done) => {
-    try {
-      const user = await User.findOne({
-        $or: [{ username: username }, { email: username }],
-      });
-      if (!user) {
-        console.log("User not found!");
-        return done(null, false, { message: "Incorrect username." });
+  new LocalStrategy(
+    {
+      usernameField: "emailOrUsername",
+      passwordField: "password",
+    },
+    async (emailOrUsername, password, done) => {
+      try {
+        const user = await User.findOne({
+          $or: [{ username: emailOrUsername }, { email: emailOrUsername }],
+        });
+        if (!user) {
+          console.log("User not found!");
+          return done(null, false, { message: "Incorrect username." });
+        }
+        const validPassword = await bcrypt.compare(password, user.password);
+        if (!validPassword) {
+          console.log("Password mismatch!");
+          return done(null, false, { message: "Incorrect password." });
+        }
+        return done(null, user);
+      } catch (err) {
+        console.error("Error in passport strategy:", err);
+        done(err);
       }
-      const validPassword = await bcrypt.compare(password, user.password);
-      if (!validPassword) {
-        console.log("Password mismatch!");
-        return done(null, false, { message: "Incorrect password." });
-      }
-      return done(null, user);
-    } catch (err) {
-      console.error("Error in passport strategy:", err);
-      done(err);
     }
-  })
+  )
 );
 
 passport.serializeUser((user, done) => {
