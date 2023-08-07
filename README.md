@@ -50,3 +50,7 @@ API Integration:
 
 Axios: A popular JavaScript library for making HTTP requests. Use Axios to interact with the APIs of Apple Music, Spotify, and YouTube Music.
 By using these frameworks and tools, you can efficiently develop a high-quality, scalable, and feature-rich app like SoundMates for both iOS and Android platforms.
+
+# db password
+
+SGmzUZVZK7Cofj8d
