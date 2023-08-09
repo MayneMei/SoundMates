@@ -14,7 +14,6 @@ const UserSchema = new Schema({
   email: {
     type: String,
     required: true,
-    unique: true,
   },
   createdDate: {
     type: Date,
@@ -28,7 +27,10 @@ const UserSchema = new Schema({
     type: Boolean,
     default: false,
   },
-  emailVerificationToken: String,
+  emailVerificationToken: {
+    type: String,
+    default: "",
+  },
   emailVerificationTokenExpires: Date,
 });
 

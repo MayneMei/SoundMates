@@ -12,19 +12,19 @@ const UserController = {
     try {
       const { username, password, email } = req.body;
 
-      const hashedPassword = await bcrypt.hash(password, 10);
-      const verificationToken = crypto.randomBytes(32).toString("hex");
+      const hashedPassword = await bcrypt.hash("hello" + password, 10);
+      const emailVerificationToken = crypto.randomBytes(32).toString("hex");
 
       const newUser = new User({
         username,
         password: hashedPassword,
         email,
-        verificationToken,
+        emailVerificationToken,
       });
 
       await newUser.save();
 
-      const verificationURL = `http://localhost:3000/users/verify-email/${verificationToken}`;
+      const verificationURL = `http://localhost:3000/users/verify-email/${emailVerificationToken}`;
 
       // Instantiate the Email class and send the verification email
       const emailInstance = new Email(newUser, verificationURL);
@@ -41,7 +41,7 @@ const UserController = {
   verifyEmail: async (req, res) => {
     try {
       const token = req.params.token;
-      const user = await User.findOne({ verificationToken: token });
+      const user = await User.findOne({ emailVerificationToken: token });
 
       if (!user) {
         return res
@@ -78,7 +78,7 @@ const UserController = {
         });
       }
 
-      const isMatch = await bcrypt.compare(password, user.password);
+      const isMatch = await bcrypt.compare("hello" + password, user.password);
       if (!isMatch) {
         return res.status(400).json({ error: "Invalid credentials." });
       }

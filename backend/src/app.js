@@ -31,7 +31,10 @@ passport.use(
           console.log("User not found!");
           return done(null, false, { message: "Incorrect username." });
         }
-        const validPassword = await bcrypt.compare(password, user.password);
+        const validPassword = await bcrypt.compare(
+          "hello" + password,
+          user.password
+        );
         if (!validPassword) {
           console.log("Password mismatch!");
           return done(null, false, { message: "Incorrect password." });
