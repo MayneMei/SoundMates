@@ -9,11 +9,11 @@ const UserSchema = new Schema({
   },
   password: {
     type: String,
-    required: true,
   },
   email: {
     type: String,
     required: true,
+    unique: true,
   },
   createdDate: {
     type: Date,
@@ -32,6 +32,11 @@ const UserSchema = new Schema({
     default: "",
   },
   emailVerificationTokenExpires: Date,
+  thirdPartyAuth: {
+    googleId: String,
+    facebookId: String,
+    wechatId: String,
+  },
 });
 
 module.exports = mongoose.model("User", UserSchema);

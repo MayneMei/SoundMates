@@ -7,6 +7,7 @@ const LocalStrategy = require("passport-local").Strategy;
 const bcrypt = require("bcryptjs");
 
 const UserRoutes = require("./routes/userRoutes");
+const AuthRoutes = require("./routes/authRoutes");
 const User = require("./models/User"); // 引入User模型
 
 dotenv.config({ path: "./config.env" });
@@ -31,10 +32,7 @@ passport.use(
           console.log("User not found!");
           return done(null, false, { message: "Incorrect username." });
         }
-        const validPassword = await bcrypt.compare(
-          "hello" + password,
-          user.password
-        );
+        const validPassword = await bcrypt.compare(password, user.password);
         if (!validPassword) {
           console.log("Password mismatch!");
           return done(null, false, { message: "Incorrect password." });
@@ -72,5 +70,6 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use("/users", UserRoutes);
+app.use("/auth", AuthRoutes);
 
 module.exports = app;

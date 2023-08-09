@@ -14,22 +14,11 @@ router.post("/register", UserController.register);
 router.get("/verify-email/:token", UserController.verifyEmail);
 
 // 用户登录
-router.post("/login", function (req, res, next) {
-  passport.authenticate("local", function (err, user, info) {
-    if (err) {
-      return next(err);
-    }
-    if (!user) {
-      return res.status(400).json({ error: "Bad request" });
-    }
-    req.logIn(user, function (err) {
-      if (err) {
-        return next(err);
-      }
-      return UserController.login(req, res);
-    });
-  })(req, res, next);
-});
+router.post(
+  "/login",
+  passport.authenticate("local", { session: false }),
+  UserController.login
+);
 
 // 用户登出
 router.get("/logout", jwtAuth, UserController.logout); // User needs to be authenticated to logout
