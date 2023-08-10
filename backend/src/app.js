@@ -10,6 +10,9 @@ const UserRoutes = require("./routes/userRoutes");
 const AuthRoutes = require("./routes/authRoutes");
 const User = require("./models/User"); // 引入User模型
 
+const spotifyRoutes = require("./routes/spotifyRoutes");
+const youtubeRoutes = require("./routes/youtubeRoutes");
+
 dotenv.config({ path: "./config.env" });
 
 const app = express();
@@ -85,6 +88,9 @@ app.use(
 );
 app.use(passport.initialize());
 app.use(passport.session());
+
+app.use("/spotify", spotifyRoutes);
+app.use("/youtube", youtubeRoutes);
 
 app.use("/users", UserRoutes);
 app.use("/auth", AuthRoutes);
