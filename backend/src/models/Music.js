@@ -15,6 +15,14 @@ const MusicPreferenceSchema = new Schema({
     type: String,
     required: true,
   },
+  album: {
+    type: String,
+    required: true,
+  },
+  genre: {
+    type: String,
+    required: true,
+  },
 });
 
 module.exports = mongoose.model("MusicPreference", MusicPreferenceSchema);
