@@ -44,6 +44,8 @@ spotifyRouter.get("/callback", async (req, res) => {
     //TODO:保存accessToken，例如在session或其他地方
     const accessToken = response.data.access_token;
     req.session.spotifyToken = accessToken;
+    console.log("AccessToken:", accessToken);
+    console.log("Session Token after setting:", req.session.spotifyToken);
     //TODO: 确认合适的重定向url
     res.redirect("/thank-you-for-logging-in"); // 根据需要进行重定向
   } catch (error) {

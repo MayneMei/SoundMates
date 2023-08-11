@@ -84,7 +84,7 @@ app.use(
   session({
     secret: "your_secret_key",
     resave: false,
-    saveUninitialized: false,
+    saveUninitialized: true,
   })
 );
 app.use(passport.initialize());
@@ -98,8 +98,15 @@ app.use("/auth", authRoutes);
 app.use("/music", musicRoutes);
 
 //for spotify authorize test
-app.use("/thank-you-for-logging-in", async (res, req) => {
-  console.log("success!");
+app.use("/thank-you-for-logging-in", async (req, res) => {
+  res.status(200).json({
+    message: `get spotify token: ${req.session.spotifyToken}`,
+  });
+});
+
+app.get("/test-token", (req, res) => {
+  console.log("Session Token in Test:", req.session.spotifyToken);
+  res.send("Token checked");
 });
 
 module.exports = app;
