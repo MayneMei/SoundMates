@@ -40,7 +40,7 @@ const MusicController = {
 
       switch (source) {
         case "spotify":
-          result = await searchSpotify(query);
+          result = await searchSpotify(query, req.session.spotifyToken);
           break;
         case "youtube":
           result = await searchYoutube(query);
@@ -57,7 +57,7 @@ const MusicController = {
   },
 };
 
-async function searchSpotify(query) {
+async function searchSpotify(query, token) {
   const spotifyAPIEndpoint = "https://api.spotify.com/v1/search";
 
   try {
@@ -69,7 +69,7 @@ async function searchSpotify(query) {
       },
       headers: {
         //TODO: to replace this string with your api key in config.env
-        Authorization: `Bearer YOUR_SPOTIFY_OAUTH_TOKEN`,
+        Authorization: `Bearer ${token}`,
       },
     });
 
