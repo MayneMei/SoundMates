@@ -37,9 +37,22 @@ const MusicController = {
 
     try {
       let result;
-
       switch (source) {
         case "spotify":
+          //验证token时效性
+          let token = req.session.spotifyToken;
+
+          if (!token) {
+            const user = await User.findById(req.user._id);
+            if (user && user.refreshToken) {
+              token = await refreshSpotifyToken(user.refreshToken);
+              req.session.spotifyToken = token;
+            } else {
+              return res
+                .status(401)
+                .json({ error: "Spotify authorization required" });
+            }
+          }
           result = await searchSpotify(query, req.session.spotifyToken);
           break;
         case "youtube":
@@ -59,7 +72,6 @@ const MusicController = {
 
 async function searchSpotify(query, token) {
   const spotifyAPIEndpoint = "https://api.spotify.com/v1/search";
-  //console.log();
   try {
     const response = await axios.get(spotifyAPIEndpoint, {
       params: {
@@ -109,6 +121,29 @@ async function searchYoutube(query) {
     }));
   } catch (error) {
     throw new Error(`Error searching YouTube: ${error.message}`);
+  }
+}
+
+async function refreshSpotifyToken(refreshToken) {
+  const spotifyTokenRefreshEndpoint = "https://accounts.spotify.com/api/token";
+
+  try {
+    const response = await axios.post(spotifyTokenRefreshEndpoint, null, {
+      params: {
+        grant_type: "refresh_token",
+        refresh_token: refreshToken,
+      },
+      headers: {
+        Authorization: `Basic ${Buffer.from(
+          `YOUR_SPOTIFY_CLIENT_ID:YOUR_SPOTIFY_CLIENT_SECRET`
+        ).toString("base64")}`,
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+    });
+
+    return response.data.access_token;
+  } catch (error) {
+    throw new Error(`Error refreshing Spotify token: ${error.message}`);
   }
 }
 

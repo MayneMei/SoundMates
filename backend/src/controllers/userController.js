@@ -87,6 +87,9 @@ const UserController = {
       }
 
       const token = generateJWT(user.id);
+
+      req.session.userId = user.id;
+
       res.json({ message: "User logged in!", token });
     } catch (error) {
       res.status(500).json({ error: error.message });

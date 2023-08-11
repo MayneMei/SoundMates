@@ -37,6 +37,10 @@ const UserSchema = new Schema({
     facebookId: String,
     wechatId: String,
   },
+  spotifyRefreshToken: {
+    type: String, // Token typically is a string
+    default: null, // By default, it can be null
+  },
 });
 
 module.exports = mongoose.model("User", UserSchema);
