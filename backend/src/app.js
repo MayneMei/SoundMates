@@ -104,9 +104,4 @@ app.use("/thank-you-for-logging-in", async (req, res) => {
   });
 });
 
-app.get("/test-token", (req, res) => {
-  console.log("Session Token in Test:", req.session.spotifyToken);
-  res.send("Token checked");
-});
-
 module.exports = app;

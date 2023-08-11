@@ -1,5 +1,5 @@
 const express = require("express");
-const MusicController = require("../controllers/MusicController"); // 假设你有一个音乐控制器
+const MusicController = require("../controllers/MusicController");
 
 const router = express.Router();
 
