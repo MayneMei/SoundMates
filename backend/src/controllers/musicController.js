@@ -59,7 +59,7 @@ const MusicController = {
 
 async function searchSpotify(query, token) {
   const spotifyAPIEndpoint = "https://api.spotify.com/v1/search";
-
+  //console.log();
   try {
     const response = await axios.get(spotifyAPIEndpoint, {
       params: {
