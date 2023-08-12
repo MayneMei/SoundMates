@@ -1,4 +1,4 @@
-const Friendship = require("./models/Friendship");
+const Friendship = require("../models/Friendship");
 
 const friendshipController = {
   // 创建友谊关系

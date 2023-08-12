@@ -97,7 +97,7 @@ app.use("/youtube", youtubeRoutes);
 app.use("/users", userRoutes);
 app.use("/auth", authRoutes);
 app.use("/music", musicRoutes);
-app.user("/friendship", friendshipRoutes);
+app.use("/friendship", friendshipRoutes);
 
 //for spotify authorize test
 app.use("/thank-you-for-logging-in", async (req, res) => {
