@@ -12,12 +12,15 @@ const authRoutes = require("./routes/authRoutes");
 const friendshipRoutes = require("./routes/friendshipRoutes");
 const spotifyRoutes = require("./routes/spotifyRoutes");
 const youtubeRoutes = require("./routes/youtubeRoutes");
+const cors = require("cors");
 
 const User = require("./models/User"); // 引入User模型
 
 dotenv.config({ path: "./config.env" });
 
 const app = express();
+
+app.use(cors());
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
