@@ -65,20 +65,6 @@ const friendshipController = {
     }
   },
 
-  // 获取用户的好友列表
-  getFriends: async (req, res) => {
-    try {
-      const { userID } = req.params;
-      const friends = await Friendship.find({
-        $or: [{ user1ID: userID }, { user2ID: userID }],
-        status: "ACCEPTED",
-      });
-      res.status(200).json(friends);
-    } catch (error) {
-      res.status(500).json({ error: "Failed to fetch friends." });
-    }
-  },
-
   // 获取特定友谊关系的详细信息
   getFriendshipDetails: async (req, res) => {
     try {
