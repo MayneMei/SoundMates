@@ -93,6 +93,15 @@ async function searchSpotify(query, token) {
       genre: "Unknown", // 提供一个默认值或从Spotify API获取更多信息
     }));
   } catch (error) {
+    //throw new Error(`Error searching Spotify: ${error.message}`);
+    if (error.response) {
+      // 打印来自服务器的响应
+      console.error("Error data:", error.response.data);
+      console.error("Error status:", error.response.status);
+      console.error("Error headers:", error.response.headers);
+    } else {
+      console.error("Error message:", error.message);
+    }
     throw new Error(`Error searching Spotify: ${error.message}`);
   }
 }
