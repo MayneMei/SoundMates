@@ -17,6 +17,8 @@ const UserController = {
     try {
       const userId = req.params.userId; // Assuming you send user's ID as a param
 
+      console.log(userId);
+
       const user = await User.findById(userId);
 
       if (!user) {

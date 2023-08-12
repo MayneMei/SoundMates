@@ -46,6 +46,20 @@ class Email {
     );
   }
 
+  async sendPasswordReset() {
+    await this.send(
+      "Password Reset Request",
+      `
+        <div>
+            <p>Hello ${this.firstName},</p>
+            <p>We received a request to reset the password for your account. Please click the link below to reset your password:</p>
+            <a href="${this.url}">Reset Password</a>
+            <p>If you didn't request a password reset, please ignore this email or contact our support if you have concerns.</p>
+        </div>
+      `
+    );
+  }
+
   async sendDifferentDeviceLogin() {
     await this.send(
       "New Device Login Detected!",

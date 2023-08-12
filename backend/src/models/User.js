@@ -41,6 +41,11 @@ const UserSchema = new Schema({
     type: String, // Token typically is a string
     default: null, // By default, it can be null
   },
+  passwordResetToken: {
+    type: String,
+    default: "",
+  },
+  passwordResetTokenExpiry: Date,
 });
 
 module.exports = mongoose.model("User", UserSchema);

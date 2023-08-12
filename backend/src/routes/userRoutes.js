@@ -11,7 +11,10 @@ const jwtAuth = passport.authenticate("jwt", { session: false });
 router.post("/register", UserController.register);
 
 //发送验证邮件
-router.post("/send-verification-email", UserController.sendVerificationEmail);
+router.post(
+  "/send-verification-email/:userId",
+  UserController.sendVerificationEmail
+);
 
 // 邮箱验证
 router.get("/verify-email/:token", UserController.verifyEmail);
