@@ -1,6 +1,7 @@
 const express = require("express");
 const passport = require("passport");
 const UserController = require("../controllers/userController");
+const preferenceController = require("../controllers/preferenceController"); // Import the preference controller
 
 const router = express.Router();
 
@@ -31,6 +32,17 @@ router.get("/logout", jwtAuth, UserController.logout); // User needs to be authe
 
 // 获取当前用户信息
 router.get("/profile", jwtAuth, UserController.profile); // User needs to be authenticated to view profile
+
+// 更新用户偏好
+router.post(
+  "/update-preferences",
+  preferenceController.getAndUpdateUserPreferences
+);
+
+router.get(
+  "/get-spotify-data-for-testing",
+  preferenceController.getSpotifyDataForTesting
+);
 
 // 用户重置密码
 router.post("/request-password-reset", UserController.requestPasswordReset);

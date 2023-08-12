@@ -8,7 +8,8 @@ const spotifyRouter = express.Router();
 // Spotify授权
 spotifyRouter.get("/authorize", (req, res) => {
   const redirect_uri = process.env.SPOTIFY_REDIRECT_URI;
-  const scope = "user-read-private,playlist-read-private"; // 例如 'user-read-private user-read-email'
+  const scope =
+    "user-read-private,playlist-read-private,user-top-read,user-library-read,user-read-recently-played"; // 例如 'user-read-private user-read-email'
 
   res.redirect(
     "https://accounts.spotify.com/authorize?" +
