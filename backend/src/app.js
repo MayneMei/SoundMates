@@ -6,13 +6,14 @@ const dotenv = require("dotenv");
 const LocalStrategy = require("passport-local").Strategy;
 const bcrypt = require("bcryptjs");
 
-const User = require("./models/User"); // 引入User模型
-
 const musicRoutes = require("./routes/musicRoutes");
 const userRoutes = require("./routes/userRoutes");
 const authRoutes = require("./routes/authRoutes");
+const friendshipRoutes = require("./routes/friendshipRoutes");
 const spotifyRoutes = require("./routes/spotifyRoutes");
 const youtubeRoutes = require("./routes/youtubeRoutes");
+
+const User = require("./models/User"); // 引入User模型
 
 dotenv.config({ path: "./config.env" });
 
@@ -96,6 +97,7 @@ app.use("/youtube", youtubeRoutes);
 app.use("/users", userRoutes);
 app.use("/auth", authRoutes);
 app.use("/music", musicRoutes);
+app.user("/friendship", friendshipRoutes);
 
 //for spotify authorize test
 app.use("/thank-you-for-logging-in", async (req, res) => {
