@@ -1,11 +1,11 @@
 const mongoose = require("mongoose");
 
 const friendshipSchema = new mongoose.Schema({
-  friendshipID: {
-    type: mongoose.Schema.Types.ObjectId,
-    required: true,
-    unique: true,
-  },
+  // friendshipID: {
+  //   type: mongoose.Schema.Types.ObjectId,
+  //   required: true,
+  //   unique: true,
+  // },
   user1ID: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
@@ -20,6 +20,10 @@ const friendshipSchema = new mongoose.Schema({
     type: String,
     enum: ["PENDING", "ACCEPTED", "DECLINED", "BLOCKED", "REMOVED"],
     required: true,
+  },
+  previousStatus: {
+    type: String,
+    enum: ["PENDING", "ACCEPTED", "DECLINED", "BLOCKED", "REMOVED"],
   },
   timestamp: { type: Date, default: Date.now },
   updatedAt: { type: Date },

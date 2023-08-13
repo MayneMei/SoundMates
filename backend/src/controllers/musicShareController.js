@@ -12,13 +12,18 @@ exports.shareMusic = async (req, res) => {
     });
 
     await newShare.save();
-    res
-      .status(201)
-      .json({ message: "Music shared successfully", share: newShare });
+    res.status(201).json({
+      status: "success",
+      message: "Music shared successfully",
+      data: {
+        share: newShare,
+      },
+    });
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Error sharing the music", error: error.message });
+    res.status(500).json({
+      stauts: "error",
+      message: `Error sharing the music:\n${error.messag}`,
+    });
   }
 };
 
@@ -31,9 +36,10 @@ exports.getReceivedShares = async (req, res) => {
 
     res.status(200).json({ receivedShares });
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Error fetching shared music", error: error.message });
+    res.status(500).json({
+      stauts: "error",
+      message: `Error fetching shared music:\n${error.message}`,
+    });
   }
 };
 
@@ -43,14 +49,22 @@ exports.getSpecificShare = async (req, res) => {
     const share = await MusicShare.findById(shareId).populate("music");
 
     if (!share) {
-      return res.status(404).json({ message: "Share not found" });
+      return res.status(404).json({
+        status: "fail",
+        message: "Share not found",
+      });
     }
 
-    res.status(200).json({ share });
+    res.status(200).json({
+      status: "success",
+      data: {
+        share,
+      },
+    });
   } catch (error) {
     res.status(500).json({
-      message: "Error fetching the specific share",
-      error: error.message,
+      status: "error",
+      message: `Error fetching the specific share:\n${error.message}`,
     });
   }
 };

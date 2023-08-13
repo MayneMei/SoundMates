@@ -15,9 +15,15 @@ const MusicController = {
       });
 
       await newPreference.save();
-      res.status(201).json({ message: "Music preference added!" });
+      res.status(201).json({
+        status: "success",
+        message: "Music preference added!",
+      });
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      res.status(500).json({
+        status: "error",
+        message: error.message,
+      });
     }
   },
 
@@ -48,9 +54,10 @@ const MusicController = {
               token = await refreshSpotifyToken(user.refreshToken);
               req.session.spotifyToken = token;
             } else {
-              return res
-                .status(401)
-                .json({ error: "Spotify authorization required" });
+              return res.status(401).json({
+                status: "fail",
+                message: "Spotify authorization required",
+              });
             }
           }
           result = await searchSpotify(query, req.session.spotifyToken);
@@ -60,12 +67,18 @@ const MusicController = {
           break;
         // ...可以添加其他音乐源
         default:
-          return res.status(400).json({ error: "Unsupported music source" });
+          return res.status(400).json({
+            status: "fail",
+            message: "Unsupported music source",
+          });
       }
 
       res.json(result);
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      res.status(500).json({
+        status: "error",
+        message: error.message,
+      });
     }
   },
 };
@@ -93,16 +106,16 @@ async function searchSpotify(query, token) {
       genre: "Unknown", // 提供一个默认值或从Spotify API获取更多信息
     }));
   } catch (error) {
-    //throw new Error(`Error searching Spotify: ${error.message}`);
-    if (error.response) {
-      // 打印来自服务器的响应
-      console.error("Error data:", error.response.data);
-      console.error("Error status:", error.response.status);
-      console.error("Error headers:", error.response.headers);
-    } else {
-      console.error("Error message:", error.message);
-    }
     throw new Error(`Error searching Spotify: ${error.message}`);
+    // if (error.response) {
+    //   // 打印来自服务器的响应
+    //   console.error("Error data:", error.response.data);
+    //   console.error("Error status:", error.response.status);
+    //   console.error("Error headers:", error.response.headers);
+    // } else {
+    //   console.error("Error message:", error.message);
+    // }
+    // throw new Error(`Error searching Spotify: ${error.message}`);
   }
 }
 
