@@ -46,6 +46,20 @@ const UserSchema = new Schema({
     default: "",
   },
   passwordResetTokenExpiry: Date,
+  location: {
+    type: {
+      type: String,
+      enum: ["Point"],
+      required: true,
+    },
+    coordinates: {
+      type: [Number], // [longitude, latitude]
+      required: true,
+    },
+  },
 });
+
+// Optional: Add a 2dsphere index if you plan to run geospatial queries in Mongoose
+UserSchema.index({ location: "2dsphere" });
 
 module.exports = mongoose.model("User", UserSchema);

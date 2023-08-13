@@ -1,5 +1,6 @@
 const express = require("express");
-const passport = require("passport");
+
+const passport = require("../middleware/passportConfig");
 const UserController = require("../controllers/userController");
 const preferenceController = require("../controllers/preferenceController"); // Import the preference controller
 
@@ -47,5 +48,9 @@ router.get(
 // 用户重置密码
 router.post("/request-password-reset", UserController.requestPasswordReset);
 router.post("/reset-password", UserController.resetPassword);
+
+//查询“附近的人”
+const authenticate = passport.authenticate("jwt", { session: false });
+router.post("/nearby", authenticate, UserController.findNearbyUsers);
 
 module.exports = router;

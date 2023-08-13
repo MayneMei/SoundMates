@@ -254,6 +254,37 @@ const UserController = {
       });
     }
   },
+
+  findNearbyUsers: async (req, res) => {
+    try {
+      const { longitude, latitude } = req.body; // 假设你的前端应用发送了当前用户的经纬度
+      const maxDistance = 5000; // 5km radius, 你可以根据需求调整
+
+      // 使用地理空间查询找到附近的用户
+      const nearbyUsers = await User.find({
+        location: {
+          $near: {
+            $geometry: {
+              type: "Point",
+              coordinates: [longitude, latitude],
+            },
+            $maxDistance: maxDistance,
+          },
+        },
+      });
+
+      res.status(200).json({
+        status: "success",
+        data: nearbyUsers,
+      });
+    } catch (error) {
+      res.status(500).json({
+        status: "error",
+        message: "Failed to find nearby users.",
+        error: error.message,
+      });
+    }
+  },
 };
 
 module.exports = UserController;
