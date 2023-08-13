@@ -14,9 +14,10 @@ exports.getSpotifyDataForTesting = async (req, res) => {
         accessToken = await refreshSpotifyToken(user.refreshToken);
         req.session.spotifyToken = accessToken;
       } else {
-        return res
-          .status(401)
-          .json({ error: "Spotify authorization required" });
+        return res.status(401).json({
+          status: "fail",
+          message: "Spotify authorization required",
+        });
       }
     }
     // Fetch data from Spotify
@@ -38,18 +39,21 @@ exports.getSpotifyDataForTesting = async (req, res) => {
 
     // Respond with the names of the fetched data
     res.status(200).json({
+      status: "success",
       message: "Successfully fetched Spotify data.",
-      topTracks: topTrackNames,
-      topArtists: topArtistNames,
-      topGenres,
-      topAlbums,
-      recentPlays: recentPlayNames,
+      data: {
+        topTracks: topTrackNames,
+        topArtists: topArtistNames,
+        topGenres,
+        topAlbums,
+        recentPlays: recentPlayNames,
+      },
     });
   } catch (error) {
     console.error("Error fetching Spotify data:", error);
     res.status(500).json({
-      message: "Error fetching Spotify data.",
-      error: error.message,
+      status: "error",
+      message: `Error fetching Spotify data: \n${error.message}`,
     });
   }
 };
@@ -86,14 +90,15 @@ exports.getAndUpdateUserPreferences = async (req, res) => {
     );
 
     res.status(200).json({
+      status: "success",
       message: "User preferences updated successfully.",
       data: updatedPreference,
     });
   } catch (error) {
     console.error("Error updating user preferences:", error);
     res.status(500).json({
-      message: "Error updating user preferences.",
-      error: error.message,
+      status: "error",
+      message: `Error updating user preferences: \n${error.message}`,
     });
   }
 };

@@ -13,9 +13,17 @@ const friendshipController = {
         message,
       });
       const savedFriendship = await newFriendship.save();
-      res.status(201).json(savedFriendship);
+      res.status(201).json({
+        status: "success",
+        data: {
+          savedFriendship,
+        },
+      });
     } catch (error) {
-      res.status(500).json({ error: "Failed to create friendship." });
+      res.status(500).json({
+        status: "error",
+        message: "Failed to create friendship.",
+      });
     }
   },
 
@@ -29,9 +37,15 @@ const friendshipController = {
         { status, updatedAt: new Date() },
         { new: true }
       );
-      res.status(200).json(updatedFriendship);
+      res.status(200).json({
+        status: "success",
+        data: { updatedFriendship },
+      });
     } catch (error) {
-      res.status(500).json({ error: "Failed to update friendship status." });
+      res.status(500).json({
+        status: "error",
+        message: "Failed to update friendship status.",
+      });
     }
   },
 
@@ -43,9 +57,15 @@ const friendshipController = {
         $or: [{ user1ID: userID }, { user2ID: userID }],
         status: "ACCEPTED",
       });
-      res.status(200).json(friends);
+      res.status(200).json({
+        status: "success",
+        data: { friends },
+      });
     } catch (error) {
-      res.status(500).json({ error: "Failed to fetch friends." });
+      res.status(500).json({
+        status: "error",
+        error: "Failed to fetch friends.",
+      });
     }
   },
 
@@ -59,9 +79,17 @@ const friendshipController = {
         { status, updatedAt: new Date() },
         { new: true }
       );
-      res.status(200).json(updatedFriendship);
+      res.status(200).json({
+        status: "success",
+        data: {
+          updatedFriendship,
+        },
+      });
     } catch (error) {
-      res.status(500).json({ error: "Failed to update friendship status." });
+      res.status(500).json({
+        status: "error",
+        message: "Failed to update friendship status.",
+      });
     }
   },
 
@@ -70,9 +98,17 @@ const friendshipController = {
     try {
       const { friendshipID } = req.params;
       const friendship = await Friendship.findById(friendshipID);
-      res.status(200).json(friendship);
+      res.status(200).json({
+        status: "success",
+        data: {
+          friendship,
+        },
+      });
     } catch (error) {
-      res.status(500).json({ error: "Failed to fetch friendship details." });
+      res.status(500).json({
+        status: "error",
+        message: "Failed to fetch friendship details.",
+      });
     }
   },
 
@@ -83,7 +119,10 @@ const friendshipController = {
       await Friendship.findByIdAndDelete(friendshipID);
       res.sendStatus(204); // No content
     } catch (error) {
-      res.status(500).json({ error: "Failed to delete friendship." });
+      res.status(500).json({
+        status: "error",
+        message: "Failed to delete friendship.",
+      });
     }
   },
 
@@ -100,9 +139,17 @@ const friendshipController = {
         message,
       });
       const savedFriendship = await newFriendship.save();
-      res.status(201).json(savedFriendship);
+      res.status(201).json({
+        status: "success",
+        data: {
+          savedFriendship,
+        },
+      });
     } catch (error) {
-      res.status(500).json({ error: "Failed to send friend request." });
+      res.status(500).json({
+        status: "error",
+        message: "Failed to send friend request.",
+      });
     }
   },
 };
