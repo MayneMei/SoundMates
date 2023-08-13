@@ -2,9 +2,11 @@ const Friendship = require("../models/Friendship");
 
 const friendshipController = {
   // 创建友谊关系
-  createFriendship: async (req, res) => {
+  createOrSendFriendRequest: async (req, res) => {
     try {
-      const { user1ID, user2ID, message } = req.body;
+      const { user1ID, message } = req.body;
+      const user2ID = req.body.user2ID || req.params.userID;
+
       const newFriendship = new Friendship({
         user1ID,
         user2ID,
@@ -22,29 +24,7 @@ const friendshipController = {
     } catch (error) {
       res.status(500).json({
         status: "error",
-        message: "Failed to create friendship.",
-      });
-    }
-  },
-
-  // 接受/拒绝好友请求
-  respondToRequest: async (req, res) => {
-    try {
-      const { friendshipID } = req.params;
-      const { status } = req.body;
-      const updatedFriendship = await Friendship.findByIdAndUpdate(
-        friendshipID,
-        { status, updatedAt: new Date() },
-        { new: true }
-      );
-      res.status(200).json({
-        status: "success",
-        data: { updatedFriendship },
-      });
-    } catch (error) {
-      res.status(500).json({
-        status: "error",
-        message: "Failed to update friendship status.",
+        message: `Failed to create friendship: ${error.message}`,
       });
     }
   },
@@ -73,12 +53,43 @@ const friendshipController = {
   updateFriendshipStatus: async (req, res) => {
     try {
       const { friendshipID } = req.params;
-      const { status } = req.body;
+      const { status: newStatus } = req.body;
+
+      const currentFriendship = await Friendship.findById(friendshipID);
+      const currentStatus = currentFriendship.status;
+
+      const validTransitions = {
+        PENDING: ["ACCEPTED", "DECLINED", "BLOCKED"],
+        ACCEPTED: ["REMOVED", "BLOCKED"],
+        DECLINED: ["BLOCKED"],
+        BLOCKED: [], // 从 BLOCKED 的转换将基于 previousStatus
+        REMOVED: ["PENDING", "BLOCKED"],
+      };
+
+      // 特殊处理 BLOCKED 状态的转换
+      if (currentStatus === "BLOCKED") {
+        validTransitions.BLOCKED.push(currentFriendship.previousStatus);
+      }
+
+      if (!validTransitions[currentStatus].includes(newStatus)) {
+        return res.status(400).json({
+          status: "fail",
+          message: `Cannot transition from ${currentStatus} to ${newStatus}.`,
+        });
+      }
+
+      const updatedData = {
+        status: newStatus,
+        updatedAt: new Date(),
+        previousStatus: currentStatus,
+      };
+
       const updatedFriendship = await Friendship.findByIdAndUpdate(
         friendshipID,
-        { status, updatedAt: new Date() },
+        updatedData,
         { new: true }
       );
+
       res.status(200).json({
         status: "success",
         data: {
@@ -122,33 +133,6 @@ const friendshipController = {
       res.status(500).json({
         status: "error",
         message: "Failed to delete friendship.",
-      });
-    }
-  },
-
-  // 发送好友请求时的消息
-  sendFriendRequest: async (req, res) => {
-    try {
-      const { userID } = req.params;
-      const { user1ID, message } = req.body;
-      const newFriendship = new Friendship({
-        user1ID,
-        user2ID: userID,
-        status: "PENDING",
-        actionUserID: user1ID,
-        message,
-      });
-      const savedFriendship = await newFriendship.save();
-      res.status(201).json({
-        status: "success",
-        data: {
-          savedFriendship,
-        },
-      });
-    } catch (error) {
-      res.status(500).json({
-        status: "error",
-        message: "Failed to send friend request.",
       });
     }
   },
