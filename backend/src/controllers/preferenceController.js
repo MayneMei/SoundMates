@@ -3,21 +3,13 @@ const SpotifyController = require("./spotifyController");
 const spotifyControllerInstance = new SpotifyController();
 const Preference = require("../models/Preference");
 
-//TODO: 对于那些已经通过Spotify认证的用户，你可以设定一个定期运行的后台任务（例如，每天运行一次）来更新他们的preferences。这种方法不依赖于用户的任何交互，可以确保数据的时效性
+//TODO: 对于那些已经通过Spotify认证的用户，可以设定一个定期运行的后台任务（例如，每天运行一次）来更新他们的preferences。这种方法不依赖于用户的任何交互，可以确保数据的时效性
 
 exports.getSpotifyDataForTesting = async (req, res) => {
   try {
     const accessToken = req.session.spotifyToken;
     if (!accessToken) {
-      const user = await User.findById(req.user._id);
-      if (user && user.refreshToken) {
-        accessToken = await refreshSpotifyToken(user.refreshToken);
-        req.session.spotifyToken = accessToken;
-      } else {
-        return res
-          .status(401)
-          .json({ error: "Spotify authorization required" });
-      }
+      req.session.spotifyToken = getAccessToken(req, res);
     }
     // Fetch data from Spotify
     const topTracks = await spotifyControllerInstance.getTopTracks(accessToken);
@@ -98,7 +90,16 @@ exports.getAndUpdateUserPreferences = async (req, res) => {
   }
 };
 
-function transformSpotifyData(data) {
+async function getAccessToken(req, res) {
+  const user = await User.findById(req.user._id);
+  if (user && user.refreshToken) {
+    return await refreshSpotifyToken(user.refreshToken);
+  } else {
+    return res.status(401).json({ error: "Spotify authorization required" });
+  }
+}
+
+async function transformSpotifyData(data) {
   return {
     userid: req.session.userId,
     topArtists: data.topArtists.map((artist) => ({
