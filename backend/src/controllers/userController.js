@@ -59,6 +59,11 @@ const UserController = {
       });
 
       await newUser.save();
+      try {
+        await sendUserVerificationEmail(newUser);
+      } catch (error) {
+        error: error.message;
+      }
 
       res.status(201).json({
         status: "success",
@@ -254,6 +259,17 @@ const UserController = {
       });
     }
   },
+};
+
+const sendUserVerificationEmail = async (user) => {
+  try {
+    const verificationURL = `http://localhost:3000/users/verify-email/${user.emailVerificationToken}`;
+    const emailInstance = new Email(user, verificationURL);
+    await emailInstance.sendWelcome();
+    return { status: "success", message: "Verification email sent!" };
+  } catch (error) {
+    return { status: "error", message: error.message };
+  }
 };
 
 module.exports = UserController;
