@@ -59,11 +59,7 @@ const UserController = {
       });
 
       await newUser.save();
-      try {
-        await sendUserVerificationEmail(newUser);
-      } catch (error) {
-        error: error.message;
-      }
+      await sendUserVerificationEmail(newUser);
 
       res.status(201).json({
         status: "success",
