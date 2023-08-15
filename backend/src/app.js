@@ -7,6 +7,7 @@ const bodyParser = require("body-parser");
 const session = require("express-session");
 const cors = require("cors");
 
+const chatRoutes = require("./routes/chatRoutes");
 const musicRoutes = require("./routes/musicRoutes");
 const userRoutes = require("./routes/userRoutes");
 const authRoutes = require("./routes/authRoutes");
@@ -42,6 +43,7 @@ app.use("/users", userRoutes);
 app.use("/auth", authRoutes);
 app.use("/music", musicRoutes);
 app.use("/friendship", friendshipRoutes);
+app.use("/chat", chatRoutes);
 
 //for spotify authorize test
 app.use("/thank-you-for-logging-in", async (req, res) => {
